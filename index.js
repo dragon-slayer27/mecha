@@ -1,9 +1,20 @@
 const Discord = require('discord.js')
 const client = new Discord.Client()
 
+const express = require('express')
+const app = express()
+
 const config = require('./config.json')
 const command = require('./command')
 const firstMessage = require('./first-message')
+
+app.get("/", (req, res) => {
+  res.send("hello DS!")
+})
+
+app.listen(3000, () => {
+  console.log("ready!")
+})
 
 client.on('ready', () =>{
     console.log('The Client is Ready!')
@@ -24,6 +35,23 @@ client.on('ready', () =>{
             })
         }
     })
+
+     command(client, 'steal', (message) => {
+       if(message.member.id === "773555910152945684" || message.member.id === '764123180691750933'){
+        const content = message.content.replace('m!steal', '')
+        const emoji = Discord.Util.parseEmoji(content)
+        if(emoji.id){
+          const extention = emoji.animated ? ".gif" : ".png";
+          const url = `https://cdn.discordapp.com/emojis/${emoji.id + extention}`
+          message.guild.emojis.create(url,  emoji.name).then((emoji) => message.channel.send(`Added ${emoji}`))
+         }
+         else{
+           message.channel.send("Please include a emoji, ya noob!")
+         }
+       }
+
+    })
+
     command(client, 'status', message => {
         if(message.member.id === "773555910152945684" || message.member.id === '764123180691750933'){
       const content = message.content.replace('m!status', '')
@@ -41,4 +69,4 @@ client.on('ready', () =>{
 
 })
 
-client.login(config.token)
+client.login(process.env.token)
